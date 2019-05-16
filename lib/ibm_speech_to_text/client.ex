@@ -4,22 +4,44 @@ defmodule IBMSpeechToText.Client do
 
   @endpoint_path "/speech-to-text/api/v1/recognize"
 
-  @spec start_link(IBMSpeechToText.region() | charlist(), String.t(), pid()) ::
-          :ignore | {:error, any()} | {:ok, pid()}
-  def start_link(api_region_or_url, api_key, stream_to \\ self())
+  @doc """
+  Starts client process responsible for communication with Speech to Text API
 
-  def start_link(region, api_key, stream_to) when is_atom(region) do
+  Requires API url or region atom (See `t:IBMSpeechToText.region/0`) and
+  an API key used to obtain `IBMSpeechToText.Token` ([here](https://cloud.ibm.com/docs/services/watson?topic=watson-iam) you can learn how to get it)
+
+  ## Options
+
+  * `:stream_to` - pid of the process that will receive recognition results, defaults to the caller of `start_link/3`
+  * Recognition parameters (such as `:model`) described in [IBM Cloud docs](https://cloud.ibm.com/apidocs/speech-to-text#WSRecognizeMethod)
+
+  ## Example
+
+  ```
+  #{inspect(__MODULE__)}.start_link(
+    :frankfurt,
+    "ABCDEFGHIJKLMNO",
+    model: "en-GB_BroadbandModel"
+  )
+  ```
+  """
+  @spec start_link(IBMSpeechToText.region() | charlist(), String.t(), Keyword.t()) ::
+          :ignore | {:error, any()} | {:ok, pid()}
+  def start_link(api_region_or_url, api_key, opts \\ [])
+
+  def start_link(region, api_key, opts) when is_atom(region) do
     with {:ok, api_url} <- IBMSpeechToText.api_host_name(region) do
-      start_link(api_url, api_key, stream_to)
+      start_link(api_url, api_key, opts)
     end
   end
 
-  def start_link(api_url, api_key, stream_to) do
-    GenServer.start_link(__MODULE__, [api_url, api_key, stream_to])
+  def start_link(api_url, api_key, opts) do
+    {stream_to, endpoint_opts} = Keyword.pop(opts, :stream_to, self())
+    GenServer.start_link(__MODULE__, [api_url, api_key, stream_to, endpoint_opts])
   end
 
   @impl true
-  def init([api_url, api_key, stream_to]) do
+  def init([api_url, api_key, stream_to, endpoint_opts]) do
     with {:ok, conn_pid} <- :gun.open(api_url, Util.ssl_port(), Util.ssl_connection_opts()) do
       monitor = Process.monitor(conn_pid)
       task = Task.async(Token, :get, [api_key])
@@ -31,15 +53,17 @@ defmodule IBMSpeechToText.Client do
         ws_ref: nil
       }
 
-      {:ok, state, {:continue, {:init, task}}}
+      ws_path = @endpoint_path <> "?" <> URI.encode_query(endpoint_opts)
+
+      {:ok, state, {:continue, {:init, task, ws_path}}}
     end
   end
 
   @impl true
-  def handle_continue({:init, task}, %{conn_pid: conn_pid} = state) do
+  def handle_continue({:init, task, ws_path}, %{conn_pid: conn_pid} = state) do
     with {:ok, _protocol} <- :gun.await_up(conn_pid),
          {:ok, token} <- Task.await(task),
-         ws_ref = :gun.ws_upgrade(conn_pid, @endpoint_path, [token |> Token.auth_header()]),
+         ws_ref = :gun.ws_upgrade(conn_pid, ws_path, [token |> Token.auth_header()]),
          :ok <- await_upgrade(conn_pid, ws_ref) do
       {:noreply, %{state | ws_ref: ws_ref}}
     else
