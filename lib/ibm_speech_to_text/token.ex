@@ -10,6 +10,7 @@ defmodule IBMSpeechToText.Token do
           expiration: non_neg_integer(),
           scope: String.t()
         }
+  @derive {Inspect, except: [:token]}
   defstruct [:token, :type, :expiration, :scope]
 
   @auth_host 'iam.bluemix.net'
