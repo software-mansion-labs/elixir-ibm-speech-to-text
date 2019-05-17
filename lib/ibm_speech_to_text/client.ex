@@ -1,6 +1,7 @@
 defmodule IBMSpeechToText.Client do
   use GenServer
   alias IBMSpeechToText.{Token, Util}
+  alias IBMSpeechToText.Message.{Start, Stop}
 
   @endpoint_path "/speech-to-text/api/v1/recognize"
 
@@ -40,6 +41,16 @@ defmodule IBMSpeechToText.Client do
     GenServer.start_link(__MODULE__, [api_url, api_key, stream_to, endpoint_opts])
   end
 
+  @spec send_message(GenServer.server(), %Start{} | %Stop{}) :: :ok
+  def send_message(client, %msg_module{} = msg) when msg_module in [Start, Stop] do
+    GenServer.cast(client, {:send_message, msg})
+  end
+
+  @spec send_message(GenServer.server(), iodata()) :: :ok
+  def send_message(client, data) do
+    GenServer.cast(client, {:send_data, data})
+  end
+
   @impl true
   def init([api_url, api_key, stream_to, endpoint_opts]) do
     with {:ok, conn_pid} <- :gun.open(api_url, Util.ssl_port(), Util.ssl_connection_opts()) do
@@ -53,7 +64,11 @@ defmodule IBMSpeechToText.Client do
         ws_ref: nil
       }
 
-      ws_path = @endpoint_path <> "?" <> URI.encode_query(endpoint_opts)
+      ws_path =
+        case endpoint_opts do
+          [] -> @endpoint_path
+          _ -> @endpoint_path <> "?" <> URI.encode_query(endpoint_opts)
+        end
 
       {:ok, state, {:continue, {:init, task, ws_path}}}
     end
@@ -73,22 +88,15 @@ defmodule IBMSpeechToText.Client do
   end
 
   @impl true
-  def handle_cast(:start, %{conn_pid: conn_pid} = state) do
-    start = %{action: "start"} |> Jason.encode_to_iodata!()
-    :gun.ws_send(conn_pid, {:text, start})
+  def handle_cast({:send_message, msg}, %{conn_pid: conn_pid} = state) do
+    encoded_msg = msg |> Jason.encode_to_iodata!()
+    :gun.ws_send(conn_pid, {:text, encoded_msg})
     {:noreply, state}
   end
 
   @impl true
   def handle_cast({:send_data, data}, %{conn_pid: conn_pid} = state) do
     :gun.ws_send(conn_pid, {:binary, data})
-    {:noreply, state}
-  end
-
-  @impl true
-  def handle_cast(:stop, %{conn_pid: conn_pid} = state) do
-    stop = %{action: "stop"} |> Jason.encode_to_iodata!()
-    :gun.ws_send(conn_pid, {:text, stop})
     {:noreply, state}
   end
 
