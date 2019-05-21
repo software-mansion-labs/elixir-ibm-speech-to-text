@@ -30,6 +30,7 @@ defmodule IBMSpeechToText.Response do
     end
   end
 
+  @doc false
   @spec from_map(%{required(String.t()) => String.t()}) ::
           {:ok, %__MODULE__{}} | {:ok, :listening} | {:error, String.t()}
   def from_map(%{"state" => "listening"}) do
@@ -43,7 +44,7 @@ defmodule IBMSpeechToText.Response do
         parse_entry(key_atom, map[key_string])
       end)
 
-    struct!(__MODULE__, parsed_keyword)
+    {:ok, struct!(__MODULE__, parsed_keyword)}
   end
 
   def from_map(%{"error" => error}) do

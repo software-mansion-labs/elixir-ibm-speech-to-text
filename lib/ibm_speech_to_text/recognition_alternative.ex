@@ -17,6 +17,7 @@ defmodule IBMSpeechToText.RecognitionAlternative do
           word_confidence: [{String.t(), float()}] | nil
         }
 
+  @doc false
   @spec from_map(%{required(String.t()) => String.t()}) :: %__MODULE__{}
   def from_map(map) do
     parsed_keyword =

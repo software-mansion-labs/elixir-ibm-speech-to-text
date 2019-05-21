@@ -34,11 +34,13 @@ defmodule IBMSpeechToText.ResponseTest do
 
     parsed_results = Enum.map(results, &Result.from_map(&1))
 
-    assert Response.from_map(example_response) == %Response{
-             results: parsed_results,
-             result_index: 0,
-             speaker_labels: speaker_labels,
-             warnings: ["some warning"]
-           }
+    assert Response.from_map(example_response) ==
+             {:ok,
+              %Response{
+                results: parsed_results,
+                result_index: 0,
+                speaker_labels: speaker_labels,
+                warnings: ["some warning"]
+              }}
   end
 end
