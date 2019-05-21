@@ -34,6 +34,7 @@ defmodule IBMSpeechToText.Message.Start do
 
   defstruct [
     :content_type,
+    :customization_weight,
     :inactivity_timeout,
     :interim_results,
     :keywords,
@@ -45,6 +46,7 @@ defmodule IBMSpeechToText.Message.Start do
     :profanity_filter,
     :smart_formatting,
     :speaker_labels,
+    :grammar_name,
     :redaction
   ]
 end
