@@ -8,7 +8,7 @@ defmodule IbmSpeechToText.MixProject do
     [
       app: :ibm_speech_to_text,
       version: @version,
-      elixir: "~> 1.8",
+      elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
 
@@ -25,7 +25,7 @@ defmodule IbmSpeechToText.MixProject do
 
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: []
     ]
   end
 
