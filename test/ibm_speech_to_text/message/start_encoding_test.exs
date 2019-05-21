@@ -3,14 +3,15 @@ defmodule IBMSpeechToText.Message.StartEncodingTest do
   alias IBMSpeechToText.Message.Start
 
   @content_type_map %{
-    :alaw => "audio/alaw",
-    :basic => "audio/basic",
+    {:alaw, 8000} => "audio/alaw;rate=8000",
+    {:basic, 8000} => "audio/basic;rate=8000",
     :flac => "audio/flac",
     :g729 => "audio/g729",
-    :l16 => "audio/l16",
+    {:l16, 8000} => "audio/l16;rate=8000",
+    {:l16, 8000, 2} => "audio/l16;rate=8000;channels=2",
     :mp3 => "audio/mp3",
     :mpeg => "audio/mpeg",
-    :mulaw => "audio/mulaw",
+    {:mulaw, 8000} => "audio/mulaw;rate=8000",
     :ogg => "audio/ogg",
     :wav => "audio/wav",
     :webm => "audio/webm",
