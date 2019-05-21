@@ -1,6 +1,6 @@
 defmodule IBMSpeechToText.Client do
   use GenServer
-  alias IBMSpeechToText.{Token, Util}
+  alias IBMSpeechToText.{Token, Util, Response}
   alias IBMSpeechToText.Message.{Start, Stop}
 
   @endpoint_path "/speech-to-text/api/v1/recognize"
@@ -46,8 +46,8 @@ defmodule IBMSpeechToText.Client do
     GenServer.cast(client, {:send_message, msg})
   end
 
-  @spec send_message(GenServer.server(), iodata()) :: :ok
-  def send_message(client, data) do
+  @spec send_data(GenServer.server(), iodata()) :: :ok
+  def send_data(client, data) do
     GenServer.cast(client, {:send_data, data})
   end
 
@@ -105,16 +105,19 @@ defmodule IBMSpeechToText.Client do
         {:gun_ws, conn_pid, ws_ref, {:text, data}},
         %{conn_pid: conn_pid, ws_ref: ws_ref, stream_to: stream_to} = state
       ) do
-    case Jason.decode!(data) do
-      %{"results" => _} = res ->
-        send(stream_to, res)
+    case Response.from_json(data) do
+      {:ok, %Response{} = response} ->
+        send(stream_to, response)
         {:noreply, state}
 
-      %{"state" => "listening"} ->
+      {:ok, :listening} ->
         {:noreply, state}
 
-      %{"error" => error} ->
-        raise "Received error over websocket: #{inspect(error)}"
+      {:error, %Jason.DecodeError{} = error} ->
+        raise "Error while decoding response: #{Jason.DecodeError.message(error)}"
+
+      {:error, error} ->
+        raise "Received error over websocket: #{error}"
     end
   end
 
