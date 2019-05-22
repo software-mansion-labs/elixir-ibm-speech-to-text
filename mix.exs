@@ -49,10 +49,17 @@ defmodule IbmSpeechToText.MixProject do
   end
 
   defp docs do
+    alias IBMSpeechToText.{Response, RecognitionResult, RecognitionAlternative}
+
     [
       main: "readme",
       extras: ["README.md"],
-      source_ref: "v#{@version}"
+      source_ref: "v#{@version}",
+      nest_modules_by_prefix: [IBMSpeechToText, IBMSpeechToText.Message],
+      groups_for_modules: [
+        Messages: ~r/IBMSpeechToText.Message/,
+        "API Responses": [Response, RecognitionResult, RecognitionAlternative]
+      ]
     ]
   end
 end
