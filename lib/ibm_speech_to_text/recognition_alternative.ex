@@ -1,6 +1,6 @@
 defmodule IBMSpeechToText.RecognitionAlternative do
   @moduledoc """
-  Recognition alternative obtained via `IBMSpeechToText.Result`.
+  Recognition alternative obtained via `IBMSpeechToText.RecognitionResult`.
 
   Elixir representation of `SpeechRecognitionAlternative` described
   [here](https://cloud.ibm.com/apidocs/speech-to-text#recognize-audio) in "Response" part

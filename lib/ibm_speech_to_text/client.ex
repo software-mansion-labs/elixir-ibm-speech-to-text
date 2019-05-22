@@ -1,4 +1,7 @@
 defmodule IBMSpeechToText.Client do
+  @moduledoc """
+  A client process responsible for communication with Speech to Text API
+  """
   use GenServer
   alias IBMSpeechToText.{Token, Util, Response}
   alias IBMSpeechToText.Message.{Start, Stop}
@@ -41,11 +44,17 @@ defmodule IBMSpeechToText.Client do
     GenServer.start_link(__MODULE__, [api_url, api_key, stream_to, endpoint_opts])
   end
 
+  @doc """
+  Sends a proper message over websocket to the API
+  """
   @spec send_message(GenServer.server(), %Start{} | %Stop{}) :: :ok
   def send_message(client, %msg_module{} = msg) when msg_module in [Start, Stop] do
     GenServer.cast(client, {:send_message, msg})
   end
 
+  @doc """
+  Sends audio data over websocket
+  """
   @spec send_data(GenServer.server(), iodata()) :: :ok
   def send_data(client, data) do
     GenServer.cast(client, {:send_data, data})

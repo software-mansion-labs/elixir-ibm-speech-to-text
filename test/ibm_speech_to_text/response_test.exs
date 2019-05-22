@@ -1,6 +1,6 @@
 defmodule IBMSpeechToText.ResponseTest do
   use ExUnit.Case, async: true
-  alias IBMSpeechToText.{Response, Result}
+  alias IBMSpeechToText.{Response, RecognitionResult}
 
   test "parse response" do
     results = [
@@ -32,7 +32,7 @@ defmodule IBMSpeechToText.ResponseTest do
       "warnings" => ["some warning"]
     }
 
-    parsed_results = Enum.map(results, &Result.from_map(&1))
+    parsed_results = Enum.map(results, &RecognitionResult.from_map(&1))
 
     assert Response.from_map(example_response) ==
              {:ok,
