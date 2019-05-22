@@ -17,7 +17,7 @@ defmodule IBMSpeechToText.Response do
   defstruct @struct_keys
 
   @doc """
-  Parse JSON response from the API into struct #{inspect(__MODULE__)}
+  Parse JSON response from the API into struct `#{inspect(__MODULE__)}`
   """
   @spec from_json(String.t()) ::
           {:ok, %__MODULE__{}}

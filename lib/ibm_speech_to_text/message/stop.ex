@@ -1,4 +1,10 @@
 defmodule IBMSpeechToText.Message.Stop do
+  @moduledoc """
+  Message (struct) marking the end of data to be recognized.
+  """
+
+  @type t() :: %__MODULE__{}
+
   defstruct []
 end
 

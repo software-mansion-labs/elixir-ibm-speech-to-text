@@ -1,4 +1,8 @@
 defmodule IBMSpeechToText do
+  @moduledoc """
+  Main module of IBMSpeechToText library
+  """
+
   @type region :: :dallas | :frankfurt | :london | :sydney | :tokyo | :washington
 
   @api_host_name_map %{
