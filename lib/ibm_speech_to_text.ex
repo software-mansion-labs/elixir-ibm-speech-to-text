@@ -10,6 +10,9 @@ defmodule IBMSpeechToText do
     london: 'gateway-lon.watsonplatform.net'
   }
 
+  @doc """
+  Provides API host name for the specific region
+  """
   @spec api_host_name(region()) :: {:ok, charlist()} | {:error, {:invalid_region, any()}}
   def api_host_name(region) do
     case @api_host_name_map[region] do
