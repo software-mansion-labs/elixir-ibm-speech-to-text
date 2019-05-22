@@ -52,7 +52,7 @@ The docs can be found on [hexdocs.pm](https://hexdocs.pm/ibm_speech_to_text)
     %IBMSpeechToText.Response{
       result_index: 0,
       results: [
-        %IBMSpeechToText.Result{
+        %IBMSpeechToText.RecognitionResult{
           alternatives: [
             %IBMSpeechToText.RecognitionAlternative{
               confidence: 0.87,
@@ -93,7 +93,7 @@ A recording fragment in `test/fixtures` comes from an audiobook
 There are a few things that are not implemented in current version:
 
 - parsing "speaker_labels" in Response
-- parsing "word_alternatives" and "keywords_result" in Result
+- parsing "word_alternatives" and "keywords_result" in RecognitionResult
 - better way to pass endpoint options to client
 
 ## Sponsors

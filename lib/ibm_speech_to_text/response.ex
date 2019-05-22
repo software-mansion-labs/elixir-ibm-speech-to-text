@@ -4,10 +4,10 @@ defmodule IBMSpeechToText.Response do
   Described [here](https://cloud.ibm.com/apidocs/speech-to-text#recognize-audio) in "Response" part
   """
 
-  alias IBMSpeechToText.Result
+  alias IBMSpeechToText.RecognitionResult
 
   @type t() :: %__MODULE__{
-          results: [Result.t()],
+          results: [RecognitionResult.t()],
           result_index: non_neg_integer(),
           speaker_labels: map(),
           warnings: [String.t()]
@@ -52,7 +52,7 @@ defmodule IBMSpeechToText.Response do
   end
 
   defp parse_entry(:results, value) do
-    {:results, Enum.map(value, &Result.from_map(&1))}
+    {:results, Enum.map(value, &RecognitionResult.from_map(&1))}
   end
 
   # TODO: speaker_labels parsing

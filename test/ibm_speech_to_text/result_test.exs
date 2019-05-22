@@ -1,6 +1,6 @@
-defmodule IBMSpeechToText.ResultTest do
+defmodule IBMSpeechToText.RecognitionResultTest do
   use ExUnit.Case, async: true
-  alias IBMSpeechToText.{Result, RecognitionAlternative}
+  alias IBMSpeechToText.{RecognitionResult, RecognitionAlternative}
 
   test "parse response" do
     alternatives = [
@@ -29,7 +29,7 @@ defmodule IBMSpeechToText.ResultTest do
 
     parsed_alternatives = alternatives |> Enum.map(&RecognitionAlternative.from_map/1)
 
-    assert Result.from_map(example_result) == %Result{
+    assert RecognitionResult.from_map(example_result) == %RecognitionResult{
              final: true,
              alternatives: parsed_alternatives,
              keywords_result: keywords_result

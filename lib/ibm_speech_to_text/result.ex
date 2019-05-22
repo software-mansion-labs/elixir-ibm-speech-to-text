@@ -1,4 +1,4 @@
-defmodule IBMSpeechToText.Result do
+defmodule IBMSpeechToText.RecognitionResult do
   @moduledoc """
   Recognition result obtained via `IBMSpeechToText.Response`.
 
