@@ -64,7 +64,7 @@ defimpl Jason.Encoder, for: IBMSpeechToText.RecognitionAlternative do
   end
 
   defp encode_entry({key, values})
-       when key in [:timestamps, :word_confidence] and is_tuple(values) do
+       when key in [:timestamps, :word_confidence] do
     {key, values |> Enum.map(&Tuple.to_list/1)}
   end
 

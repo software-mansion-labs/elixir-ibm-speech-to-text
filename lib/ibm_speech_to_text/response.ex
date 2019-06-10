@@ -20,7 +20,7 @@ defmodule IBMSpeechToText.Response do
   Parse JSON response from the API into struct `#{inspect(__MODULE__)}`
   """
   @spec from_json(String.t()) ::
-          {:ok, %__MODULE__{}}
+          {:ok, __MODULE__.t()}
           | {:ok, :listening}
           | {:error, String.t()}
           | {:error, Jason.DecodeError.t()}
@@ -37,7 +37,11 @@ defmodule IBMSpeechToText.Response do
     {:ok, :listening}
   end
 
-  def from_map(%{"results" => _} = map) do
+  def from_map(%{"error" => error}) do
+    {:error, error}
+  end
+
+  def from_map(map) when is_map(map) do
     parsed_keyword =
       Enum.map(@struct_keys, fn key_atom ->
         key_string = Atom.to_string(key_atom)
@@ -47,11 +51,7 @@ defmodule IBMSpeechToText.Response do
     {:ok, struct!(__MODULE__, parsed_keyword)}
   end
 
-  def from_map(%{"error" => error}) do
-    {:error, error}
-  end
-
-  defp parse_entry(:results, value) do
+  defp parse_entry(:results, value) when value != nil do
     {:results, Enum.map(value, &RecognitionResult.from_map(&1))}
   end
 

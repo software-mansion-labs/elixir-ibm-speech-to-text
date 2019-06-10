@@ -47,7 +47,7 @@ defmodule IBMSpeechToText.Client do
   @doc """
   Sends a proper message over websocket to the API
   """
-  @spec send_message(GenServer.server(), %Start{} | %Stop{}) :: :ok
+  @spec send_message(GenServer.server(), Start.t() | Stop.t()) :: :ok
   def send_message(client, %msg_module{} = msg) when msg_module in [Start, Stop] do
     GenServer.cast(client, {:send_message, msg})
   end
