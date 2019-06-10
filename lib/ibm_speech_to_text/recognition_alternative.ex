@@ -46,10 +46,27 @@ defmodule IBMSpeechToText.RecognitionAlternative do
         {word, confidence}
       end)
 
-    {:timestamps, confidences}
+    {:word_confidence, confidences}
   end
 
   defp parse_entry(key_atom, value) do
     {key_atom, value}
   end
+end
+
+defimpl Jason.Encoder, for: IBMSpeechToText.RecognitionAlternative do
+  def encode(value, opts) do
+    value
+    |> Map.from_struct()
+    |> Enum.filter(fn {_key, val} -> val != nil end)
+    |> Enum.into(%{}, &encode_entry/1)
+    |> Jason.Encode.map(opts)
+  end
+
+  defp encode_entry({key, values})
+       when key in [:timestamps, :word_confidence] and is_tuple(values) do
+    {key, values |> Enum.map(&Tuple.to_list/1)}
+  end
+
+  defp encode_entry(entry), do: entry
 end

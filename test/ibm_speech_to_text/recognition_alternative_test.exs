@@ -38,7 +38,7 @@ defmodule IBMSpeechToText.RecognitionAlternativeTest do
     assert RecognitionAlternative.from_map(example_alternative) == %RecognitionAlternative{
              confidence: 0.77,
              transcript: "some text",
-             timestamps: [
+             word_confidence: [
                {"some", 0.95},
                {"text", 0.866}
              ]

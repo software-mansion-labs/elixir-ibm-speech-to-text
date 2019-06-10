@@ -61,3 +61,13 @@ defmodule IBMSpeechToText.Response do
     {key_atom, value}
   end
 end
+
+defimpl Jason.Encoder, for: IBMSpeechToText.Response do
+  def encode(value, opts) do
+    value
+    |> Map.from_struct()
+    |> Enum.filter(fn {_key, val} -> val != nil end)
+    |> Map.new()
+    |> Jason.Encode.map(opts)
+  end
+end
