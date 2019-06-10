@@ -1,7 +1,7 @@
 defmodule IbmSpeechToText.MixProject do
   use Mix.Project
 
-  @version "0.1.1"
+  @version "0.1.2"
   @github_url "https://github.com/SoftwareMansion/elixir-ibm-speech-to-text"
 
   def project do
