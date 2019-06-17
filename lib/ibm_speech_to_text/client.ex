@@ -9,7 +9,8 @@ defmodule IBMSpeechToText.Client do
   @endpoint_path "/speech-to-text/api/v1/recognize"
 
   @doc """
-  Starts client process responsible for communication with Speech to Text API
+  Starts a client process responsible for communication with Speech to Text API
+  linked to the current process.
 
   Requires API url or region atom (See `t:IBMSpeechToText.region/0`) and
   an API key used to obtain `IBMSpeechToText.Token` ([here](https://cloud.ibm.com/docs/services/watson?topic=watson-iam) you can learn how to get it)
@@ -31,17 +32,30 @@ defmodule IBMSpeechToText.Client do
   """
   @spec start_link(IBMSpeechToText.region() | charlist(), String.t(), Keyword.t()) ::
           :ignore | {:error, any()} | {:ok, pid()}
-  def start_link(api_region_or_url, api_key, opts \\ [])
+  def start_link(api_region_or_url, api_key, opts \\ []) do
+    do_start(:start_link, api_region_or_url, api_key, opts)
+  end
 
-  def start_link(region, api_key, opts) when is_atom(region) do
+  @doc """
+  Starts a client process without links.
+
+  See `start_link/3` for more info.
+  """
+  @spec start(IBMSpeechToText.region() | charlist(), String.t(), Keyword.t()) ::
+          :ignore | {:error, any()} | {:ok, pid()}
+  def start(api_region_or_url, api_key, opts \\ []) do
+    do_start(:start, api_region_or_url, api_key, opts)
+  end
+
+  defp do_start(function, region, api_key, opts) when is_atom(region) do
     with {:ok, api_url} <- IBMSpeechToText.api_host_name(region) do
-      start_link(api_url, api_key, opts)
+      do_start(function, api_url, api_key, opts)
     end
   end
 
-  def start_link(api_url, api_key, opts) do
+  defp do_start(function, api_url, api_key, opts) do
     {stream_to, endpoint_opts} = Keyword.pop(opts, :stream_to, self())
-    GenServer.start_link(__MODULE__, [api_url, api_key, stream_to, endpoint_opts])
+    apply(GenServer, function, [__MODULE__, [api_url, api_key, stream_to, endpoint_opts]])
   end
 
   @doc """
@@ -58,6 +72,14 @@ defmodule IBMSpeechToText.Client do
   @spec send_data(GenServer.server(), iodata()) :: :ok
   def send_data(client, data) do
     GenServer.cast(client, {:send_data, data})
+  end
+
+  @doc """
+  Stops the client process. A proxy for `GenServer.stop/3`.
+  """
+  @spec stop(GenServer.server(), reason :: term(), GenServer.timeout()) :: :ok
+  def stop(client, reason \\ :normal, timeout \\ :infinity) do
+    GenServer.stop(client, reason, timeout)
   end
 
   @impl true
