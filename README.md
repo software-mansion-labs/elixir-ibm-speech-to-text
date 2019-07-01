@@ -95,7 +95,6 @@ A recording fragment in `test/fixtures` comes from an audiobook
 
 There are a few things that are not implemented in current version:
 
-- parsing "speaker_labels" in Response
 - parsing "word_alternatives" and "keywords_result" in RecognitionResult
 - better way to pass endpoint options to client
 
