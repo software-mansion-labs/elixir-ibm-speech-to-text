@@ -217,7 +217,7 @@ defmodule IBMSpeechToText.Client do
       end
 
     with {:ok, token} <- token_res,
-         {:ok, _protocol} <- :gun.await_up(conn_pid),
+         {:ok, _protocol} <- :gun.await_up(conn_pid, 10000),
          :ok = :gun.flush(conn_pid),
          ws_ref = :gun.ws_upgrade(conn_pid, state.ws_path, [token |> Token.auth_header()]),
          :ok <- await_upgrade(conn_pid, ws_ref) do
