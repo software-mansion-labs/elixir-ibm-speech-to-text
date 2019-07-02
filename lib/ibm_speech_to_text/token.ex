@@ -106,4 +106,14 @@ defmodule IBMSpeechToText.Token do
   def auth_header(%__MODULE__{token: token, type: type}) do
     {"Authorization", "#{type} #{token}"}
   end
+
+  @expiration_margin 10
+
+  @doc """
+  Checks if the token should be refreshed
+  """
+  @spec should_refresh?(t()) :: boolean()
+  def should_refresh?(%__MODULE__{expiration: expiration}) do
+    expiration - System.os_time(:second) > @expiration_margin
+  end
 end
