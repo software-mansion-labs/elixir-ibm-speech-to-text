@@ -12,7 +12,7 @@ The package can be installed by adding `:ibm_speech_to_text` to your list of dep
 ```elixir
 def deps do
   [
-    {:ibm_speech_to_text, "~> 0.2"}
+    {:ibm_speech_to_text, "~> 0.3"}
   ]
 end
 ```
