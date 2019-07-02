@@ -57,12 +57,13 @@ defmodule IBMSpeechToText.Client do
   defp do_start(function, api_url, api_key, opts) do
     {client_opts, endpoint_opts} = Keyword.split(opts, [:stream_to, :keep_alive])
 
-    client_opts =
-      client_opts
-      |> Keyword.put_new(:stream_to, self())
-      |> Keyword.put_new(:keep_alive, false)
+    stream_to = client_opts |> Keyword.get(:stream_to, self())
+    keep_alive = client_opts |> Keyword.get(:keep_alive, false)
 
-    apply(GenServer, function, [__MODULE__, [api_url, api_key, client_opts, endpoint_opts]])
+    apply(GenServer, function, [
+      __MODULE__,
+      [api_url, api_key, stream_to, keep_alive, endpoint_opts]
+    ])
   end
 
   @doc """
@@ -90,7 +91,7 @@ defmodule IBMSpeechToText.Client do
   end
 
   @impl true
-  def init([api_url, api_key, client_opts, endpoint_opts]) do
+  def init([api_url, api_key, stream_to, keep_alive, endpoint_opts]) do
     with {:ok, conn_pid} <- :gun.open(api_url, Util.ssl_port(), Util.ssl_connection_opts()) do
       monitor = Process.monitor(conn_pid)
       task = Task.async(Token, :get, [api_key])
@@ -105,8 +106,8 @@ defmodule IBMSpeechToText.Client do
         api_key: api_key,
         conn_pid: conn_pid,
         conn_monitor: monitor,
-        stream_to: client_opts[:stream_to],
-        keep_alive: client_opts[:keep_alive],
+        stream_to: stream_to,
+        keep_alive: keep_alive,
         token: nil,
         ws_path: ws_path,
         ws_ref: nil
