@@ -100,7 +100,7 @@ There are a few things that are not implemented in current version:
 
 ## Sponsors
 
-This project is sponsored by [Abridge AI, Inc.](https://abridge.ai)
+This project is sponsored by [Abridge AI, Inc.](https://abridge.com)
 
 ## Copyright and License
 
