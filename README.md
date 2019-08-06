@@ -98,10 +98,6 @@ There are a few things that are not implemented in current version:
 - parsing "word_alternatives" and "keywords_result" in RecognitionResult
 - better way to pass endpoint options to client
 
-## Sponsors
-
-This project is sponsored by [Abridge AI, Inc.](https://abridge.com)
-
 ## Copyright and License
 
 Copyright 2019, [Software Mansion](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=elixir-ibm-speech-to-text)
