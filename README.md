@@ -1,7 +1,7 @@
 # IBM Cloud Speech to Text
 
 [![Hex.pm](https://img.shields.io/hexpm/v/ibm_speech_to_text.svg)](https://hex.pm/packages/ibm_speech_to_text)
-[![CircleCI](https://circleci.com/gh/SoftwareMansion/elixir-ibm-speech-to-text.svg?style=svg)](https://circleci.com/gh/SoftwareMansion/elixir-ibm-speech-to-text)
+[![CircleCI](https://circleci.com/gh/software-mansion-labs/elixir-ibm-speech-to-text.svg?style=svg)](https://circleci.com/gh/software-mansion-labs/elixir-ibm-speech-to-text)
 
 Elixir client for [IBM Cloud Speech to Text service](https://cloud.ibm.com/docs/services/speech-to-text)
 
